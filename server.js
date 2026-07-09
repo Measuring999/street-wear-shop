@@ -6,6 +6,14 @@ const app = express();
 app.use(express.json());
 app.use(cors()); // Разрешаем нашему сайту общаться с сервером
 
+// Раздаем статические файлы (картинки, css, js)
+app.use(express.static(__dirname));
+
+// При заходе на главную страницу отдаем index.html
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
 // 1. Создаем и подключаемся к базе данных SQLite
 const db = new sqlite3.Database('./shop_database.db', (err) => {
     if (err) {
