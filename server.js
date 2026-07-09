@@ -87,8 +87,9 @@ app.get('/api/users', (req, res) => {
     });
 });
 
-// Запускаем сервер на порту 3000
-const PORT = 3000;
+// Переменная process.env.PORT автоматически возьмет тот порт, который даст Render
+const PORT = process.env.PORT || 3000; 
+
 app.listen(PORT, () => {
-    console.log(`🚀 Сервер запущен! API доступно по адресу http://localhost:${PORT}`);
+    console.log(`🚀 Сервер успешно запущен на порту ${PORT}`);
 });
