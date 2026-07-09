@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Street Wear Shop Ultra</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <span class="logo-text">STREET WEAR SHOP</span>
+            <div class="nav-buttons">
+                <button id="theme-btn" class="nav-btn">🌙 Тема</button>
+                <button id="wheel-open-btn" class="nav-btn">🎡 Колесо скидок</button>
+                <button id="auth-btn" class="nav-btn">👤 Войти</button>
+                <div id="user-badge" class="user-badge hidden">
+                    Привет, <span id="user-name-display"></span>!
+                    <button id="profile-open-btn" class="nav-btn" style="padding: 2px 8px; margin-left: 5px; font-size: 12px; background: #111;">Профиль</button>
+                </div>
+                <button id="cart-btn" class="nav-btn font-bold">🛒 Корзина: <span id="cart-count">0</span> шт.</button>
+            </div>
+        </div>
+        
+        <nav class="main-nav">
+            <div class="nav-item"><a href="#category-mens">Мужская</a></div>
+            <div class="nav-item"><a href="#category-womens">Женская</a></div>
+            <div class="nav-item"><a href="#category-kids">Детская</a></div>
+            <div class="nav-item"><a href="#category-sports">Спортивная</a></div>
+            <!-- НОВАЯ КАТЕГОРИЯ -->
+            <div class="nav-item"><a href="#category-sneakers">Кроссовки</a></div>
+            <div class="nav-item"><a href="#category-summer">Летняя</a></div>
+            <div class="nav-item"><a href="#category-winter">Зимняя</a></div>
+            <div class="nav-item"><a href="#category-midseason">Межсезонная</a></div>
+        </nav>
+    </header>
+
+    <section class="hero-banner">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h2 class="hero-title">Street Wear Shop Ultra</h2>
+            <p class="hero-subtitle">Новое поколение уличного стиля</p>
+            <a href="#quick-categories" class="hero-btn">Выбрать категорию</a>
+        </div>
+    </section>
+
+    <section class="quick-nav-section" id="quick-categories">
+        <div class="quick-nav-grid">
+            <a href="#category-mens" class="nav-card" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=500&auto=format&fit=crop');">
+                <span>Мужская одежда</span>
+            </a>
+            <a href="#category-womens" class="nav-card" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=500&auto=format&fit=crop');">
+                <span>Женская одежда</span>
+            </a>
+            <a href="#category-kids" class="nav-card" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1519457431-44ccd64a579b?q=80&w=500&auto=format&fit=crop');">
+                <span>Детская одежда</span>
+            </a>
+        </div>
+    </section>
+
+<div class="catalog-controls">
+        <input type="text" id="search-input" placeholder="Поиск товаров (например, худи)...">
+        <select id="sort-select">
+            <option value="default">Сортировка: По умолчанию</option>
+            <option value="cheap">Сначала дешевые</option>
+            <option value="expensive">Сначала дорогие</option>
+        </select>
+    </div>
+
+    <main id="catalog-start">
+        <div id="categories-container"></div>
+    </main>
+
+    <!-- Корзина -->
+    <div id="cart-modal" class="modal hidden">
+        <div class="modal-content animate-pop cart-modal-content">
+            <span class="close-modal" id="close-cart">&times;</span>
+            <h2>Ваш заказ</h2>
+            
+            <div class="smart-shipping-container">
+                <p id="shipping-text">Добавьте товаров для бесплатной доставки</p>
+                <div class="progress-bar-bg">
+                    <div id="shipping-progress" class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div id="cart-items-modal">Корзина пуста</div>
+            
+	    <div class="promo-block">
+                <input type="text" id="promo-input" placeholder="Введите промокод">
+                <button id="apply-promo-btn" class="action-btn" style="width: auto; padding: 10px 15px;">Применить</button>
+            </div>
+
+            <div class="loyalty-block">
+                <label for="user-status">Статус клиента:</label>
+                <select id="user-status">
+                    <option value="NEW">Обычный (скидка от 2000 грн)</option>
+                    <option value="VIP">VIP клиент (скидка 15% всегда)</option>
+                </select>
+            </div>
+
+            <div class="total-block">
+                <p>Сумма: <span id="subtotal">0</span> грн</p>
+                <p>Скидка от статуса: <span id="status-discount">0</span> грн</p>
+                <p>Скидка с колеса (<span id="wheel-percent-display">0</span>%): <span id="wheel-discount-val">0</span> грн</p>
+		<p>Скидка по промокоду: <span id="promo-discount-val">0</span> грн</p>
+                <p class="final">Итого: <span id="total">0</span> грн</p>
+                <p class="bonus">Кешбэк бонусами: <span id="bonus-earned">0</span></p>
+            </div>
+            <button class="action-btn style-checkout-btn">Оформить заказ</button>
+        </div>
+    </div>
+
+    <!-- Регистрация -->
+    <!-- Вход / Регистрация -->
+    <div id="auth-modal" class="modal hidden">
+        <div class="modal-content animate-pop" style="max-width: 400px; width: 90%;">
+            <span class="close-modal" id="close-auth">&times;</span>
+            
+            <!-- Шаг 1: Выбор действия -->
+            <div id="auth-choice-step">
+                <h2 style="text-align: center; margin-bottom: 25px;">Добро пожаловать</h2>
+                <button id="choice-login-btn" class="action-btn" style="margin-bottom: 15px; background: #28a745;">Войти</button>
+                <button id="choice-reg-btn" class="action-btn" style="background: #6c757d;">Создать аккаунт</button>
+            </div>
+
+            <!-- Шаг 2: Форма (изначально скрыта) -->
+            <!-- Шаг 2: Форма -->
+            <form id="register-form" class="hidden" style="margin-top: 10px;">
+                <h2 id="auth-form-title" style="margin-bottom: 20px;">Регистрация</h2>
+                
+                <!-- Поля для регистрации -->
+                <div id="reg-fields">
+                    <input type="text" id="reg-name" placeholder="Имя">
+                    <input type="text" id="reg-surname" placeholder="Фамилия">
+                    <input type="email" id="reg-email" placeholder="Электронная почта">
+                    <input type="password" id="reg-password" placeholder="Придумайте пароль">
+                </div>
+                
+                <!-- Поля для входа -->
+                <div id="login-fields" class="hidden">
+                    <input type="email" id="login-email" placeholder="Электронная почта">
+                    <input type="password" id="login-password" placeholder="Пароль">
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="action-btn">Продолжить</button>
+                <button type="button" id="back-to-choice" class="nav-btn" style="width: 100%; margin-top: 10px; background: transparent; color: #666; border: none;">← Назад</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Профиль -->
+    <div id="profile-modal" class="modal hidden">
+        <div class="modal-content animate-pop profile-modal-content" style="max-width: 550px; width: 90%;">
+            <span class="close-modal" id="close-profile">&times;</span>
+            <h2>Личный кабинет</h2>
+            
+            <!-- Просмотр данных -->
+            <div id="profile-view-mode" class="profile-info">
+                <p><strong>Имя и Фамилия:</strong> <span id="prof-fullname">—</span></p>
+                <p><strong>Email:</strong> <span id="prof-email">—</span></p>
+                <p><strong>Страна:</strong> <span id="prof-country">—</span></p>
+                <p><strong>Дата рождения:</strong> <span id="prof-dob">—</span></p>
+                <button id="profile-edit-btn" class="action-btn" style="margin-top: 15px; background: #007bff;">Изменить данные</button>
+            </div>
+
+            <!-- Редактирование данных (изначально скрыто) -->
+            <div id="profile-edit-mode" class="hidden" style="margin-top: 15px;">
+                <input type="text" id="edit-name" placeholder="Имя" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px;">
+                <input type="text" id="edit-surname" placeholder="Фамилия" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px;">
+                <input type="text" id="edit-country" placeholder="Страна" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px;">
+                <label style="font-size:12px; color:#666;">Дата рождения:</label>
+                <input type="date" id="edit-dob" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:6px;">
+                
+                <button id="profile-save-btn" class="action-btn" style="background: #28a745; margin-bottom: 10px;">Сохранить</button>
+                <button id="profile-cancel-btn" class="nav-btn" style="width:100%; background:transparent; color:#666; border:none;">Отмена</button>
+            </div>
+
+            <h3 style="margin-top:25px;">История заказов</h3>
+            <div id="profile-orders-history"></div>
+            
+            <button id="logout-btn" class="action-btn" style="margin-top: 20px; background: #dc3545;">Выйти с аккаунта</button>
+        </div>
+    </div>
+
+    <!-- Колесо фортуны -->
+    <div id="wheel-modal" class="modal hidden">
+        <div class="modal-content animate-pop wheel-modal-content">
+            <span class="close-modal" id="close-wheel">&times;</span>
+            <h2>Испытай удачу!</h2>
+            <div class="wheel-container">
+                <div class="wheel-pointer">▼</div>
+                <div id="wheel" class="wheel-element">
+                    <div class="wheel-number" style="transform: rotate(22.5deg) translateY(-110px) rotate(-22.5deg);">5%</div>
+                    <div class="wheel-number" style="transform: rotate(67.5deg) translateY(-110px) rotate(-67.5deg);">10%</div>
+                    <div class="wheel-number" style="transform: rotate(112.5deg) translateY(-110px) rotate(-112.5deg);">5%</div>
+                    <div class="wheel-number" style="transform: rotate(157.5deg) translateY(-110px) rotate(-157.5deg);">15%</div>
+                    <div class="wheel-number" style="transform: rotate(202.5deg) translateY(-110px) rotate(-202.5deg);">5%</div>
+                    <div class="wheel-number" style="transform: rotate(247.5deg) translateY(-110px) rotate(-247.5deg);">10%</div>
+                    <div class="wheel-number" style="transform: rotate(292.5deg) translateY(-110px) rotate(-292.5deg);">50%</div>
+                    <div class="wheel-number" style="transform: rotate(337.5deg) translateY(-110px) rotate(-337.5deg);">15%</div>
+                </div>
+            </div>
+            <button id="spin-btn" class="action-btn">Крутить колесо</button>
+            <p id="wheel-result"></p>
+        </div>
+    </div>
+
+    <!-- Окно ИИ Чата -->
+    <div id="ai-chat-window" class="chat-window hidden">
+        <div class="chat-header">
+            <h3>🤖 AI Консультант</h3>
+            <span id="close-chat" class="close-chat-btn">&times;</span>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <div class="message ai-message">Привет! Я ИИ-ассистент магазина. Подскажу по размерам, наличию и доставке. Что интересует?</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Введите сообщение...">
+            <button id="send-chat-btn">➤</button>
+        </div>
+    </div>
+
+    <!-- Кнопка Поддержки -->
+    <button id="support-btn" class="support-button">💬 Поддержка</button>
+
+    <!-- Окно карточки товара -->
+    <div id="product-modal" class="modal hidden">
+        <div class="modal-content animate-pop product-modal-content">
+            <span class="close-modal" id="close-product">&times;</span>
+            <div class="product-modal-body">
+                <div class="product-modal-img">
+                    <img id="modal-img" src="" alt="">
+                </div>
+                <div class="product-modal-info">
+                    <h2 id="modal-title">Название</h2>
+                    <p id="modal-price" class="modal-price-text">0 грн</p>
+                    <p id="modal-desc" class="modal-desc">Стильная и удобная вещь базового гардероба. Плотная ткань, отличная посадка. Выберите подходящий размер перед добавлением в корзину.</p>
+                    
+                    <div class="size-selector">
+                        <p style="margin-bottom: 8px; font-weight: bold;">Размер:</p>
+                        <div class="sizes" id="modal-sizes">
+                            <button class="size-btn">S</button>
+                            <button class="size-btn active">M</button>
+                            <button class="size-btn">L</button>
+                            <button class="size-btn">XL</button>
+                        </div>
+                    </div>
+                    <button id="modal-add-to-cart" class="action-btn style-checkout-btn" style="margin-top:auto;">Добавить в корзину</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="shopLogic.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

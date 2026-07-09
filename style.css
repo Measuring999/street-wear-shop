@@ -1,0 +1,235 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    background-color: #f8f9fa;
+    color: #212529;
+    scroll-behavior: smooth;
+}
+
+header {
+    background: #111;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    border-bottom: 1px solid #222;
+}
+.logo-text { font-size: 20px; font-weight: 800; letter-spacing: 1px; }
+.main-nav { display: flex; justify-content: center; background: #111; position: relative; }
+.nav-item { position: static; }
+.main-nav > .nav-item > a {
+    display: block; padding: 15px 25px; color: #aaa; text-decoration: none; font-weight: 600; font-size: 15px; transition: color 0.2s;
+}
+.main-nav > .nav-item:hover > a { color: #fff; }
+.hero-banner {
+    position: relative; 
+    width: 100%; 
+    height: 70vh; 
+    background-image: url('https://caliroots.com/cdn/shop/files/The_Streetwear_Culture__More_Than_Just_Clothing_1600x.webp?v=1717752450'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    text-align: center;
+}
+.hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1; }
+.hero-content { position: relative; z-index: 2; color: #fff; padding: 0 20px; }
+.hero-title { font-size: 64px; font-weight: 900; margin: 0 0 10px 0; letter-spacing: 2px; text-shadow: 0 4px 20px rgba(0,0,0,0.8); text-transform: uppercase; }
+.hero-subtitle { font-size: 22px; margin: 0 0 30px 0; font-weight: 400; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+.hero-btn { display: inline-block; padding: 14px 35px; background: #fff; color: #111; text-decoration: none; font-weight: 700; border-radius: 30px; letter-spacing: 1px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+.hero-btn:hover { background: #111; color: #fff; transform: translateY(-3px); }
+.quick-nav-section { padding: 40px; max-width: 1400px; margin: 0 auto; }
+.quick-nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.nav-card { height: 160px; border-radius: 12px; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.nav-card span { color: white; font-size: 22px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+.nav-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); filter: brightness(1.1); }
+.nav-buttons { display: flex; align-items: center; gap: 15px; }
+.nav-btn { background: #222; color: white; border: 1px solid #444; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; }
+.nav-btn:hover { background: white; color: black; transform: translateY(-2px); }
+.font-bold { font-weight: bold; }
+.user-badge { background: #28a745; padding: 6px 12px; border-radius: 4px; color: white; font-weight: bold; }
+main { padding: 20px 40px 60px; max-width: 1400px; margin: 0 auto; }
+.category-section { margin-bottom: 60px; scroll-margin-top: 100px; }
+.category-title { font-size: 28px; font-weight: 800; margin-bottom: 25px; border-left: 5px solid #111; padding-left: 15px; text-transform: uppercase; letter-spacing: 1px; background: rgba(255, 255, 255, 0.85); display: inline-block; padding-right: 20px; border-radius: 0 4px 4px 0; }
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px; }
+.product-card { background: #fff; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: all 0.3s ease; }
+.product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+.product-img-container { width: 100%; height: 240px; margin-bottom: 15px; overflow: hidden; border-radius: 8px; }
+.product-img-web { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+.product-card:hover .product-img-web { transform: scale(1.08); }
+.product-card h3 { font-size: 16px; margin: 10px 0 5px 0; }
+.product-card p { font-weight: 700; color: #333; margin: 0 0 15px 0; }
+.product-card button { background: #111; color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: auto; font-weight: bold; transition: background 0.2s; }
+.product-card button:hover { background: #007bff; }
+.cart-modal-content { max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; }
+.smart-shipping-container { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #dee2e6; }
+.smart-shipping-container p { margin: 0 0 8px 0; font-size: 13px; font-weight: 600; }
+.progress-bar-bg { width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden; }
+.progress-bar-fill { width: 0%; height: 100%; background: #ffc107; transition: width 0.4s ease, background-color 0.4s ease; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; animation: fadeIn 0.3s ease; }
+.remove-btn { background: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+.remove-btn:hover { background: #bd2130; }
+.loyalty-block select { width: 100%; padding: 10px; margin: 10px 0 20px; border-radius: 6px; border: 1px solid #ccc; }
+.total-block .final { font-size: 22px; font-weight: bold; margin-top: 15px; border-top: 2px solid #111; padding-top: 15px; }
+.total-block .bonus { color: #28a745; font-weight: bold; }
+.style-checkout-btn { margin-top: 15px; background: #28a745; }
+.style-checkout-btn:hover { background: #218838; }
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(4px); transition: all 0.3s ease; }
+.modal-content { background: white; padding: 40px; border-radius: 16px; position: relative; }
+.close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; }
+#register-form input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+.action-btn { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+.action-btn:hover { background: #0056b3; }
+.wheel-modal-content { text-align: center; max-width: 450px; }
+.wheel-container { position: relative; width: 300px; height: 300px; margin: 30px auto; }
+.wheel-pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 28px; z-index: 10; color: #dc3545; }
+.wheel-element { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #333; position: relative; background: conic-gradient( #ffc107 0deg 45deg, #28a745 45deg 90deg, #17a2b8 90deg 135deg, #dc3545 135deg 180deg, #6f42c1 180deg 225deg, #e83e8c 225deg 270deg, #fd7e14 270deg 315deg, #20c997 315deg 360deg ); box-shadow: 0 4px 10px rgba(0,0,0,0.2); overflow: hidden; }
+.wheel-number { position: absolute; width: 40px; height: 40px; left: calc(50% - 20px); top: calc(50% - 20px); font-weight: bold; color: white; font-size: 16px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; }
+#wheel-result { margin-top: 20px; font-weight: bold; font-size: 18px; color: #28a745; min-height: 27px; }
+.profile-modal-content { max-width: 550px; width: 90%; max-height: 85vh; overflow-y: auto; text-align: left; }
+.profile-info p { margin: 8px 0; font-size: 15px; border-bottom: 1px dashed #eee; padding-bottom: 6px; }
+.support-button { position: fixed; bottom: 20px; right: 20px; background: #007bff; color: white; border: none; padding: 15px 22px; border-radius: 50px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 999; transition: all 0.3s ease; }
+.support-button:hover { background: #0056b3; transform: translateY(-3px) scale(1.03); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+
+.hidden { display: none !important; }
+.animate-pop { animation: popUp 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popUp { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+/* --- Стили для ИИ Чата --- */
+.chat-window { position: fixed; bottom: 85px; right: 20px; width: 340px; height: 450px; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; z-index: 1000; overflow: hidden; animation: popUp 0.3s ease; border: 1px solid #eee; }
+.chat-header { background: #111; color: #fff; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+.chat-header h3 { margin: 0; font-size: 16px; }
+.close-chat-btn { cursor: pointer; font-size: 24px; line-height: 1; transition: color 0.2s; }
+.close-chat-btn:hover { color: #dc3545; }
+.chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 10px; }
+.message { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; animation: fadeIn 0.3s ease; }
+.ai-message { background: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; }
+.user-message { background: #007bff; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+.chat-input-area { display: flex; padding: 10px; background: #fff; border-top: 1px solid #eee; }
+#chat-input { flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 14px; }
+#send-chat-btn { background: #111; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; cursor: pointer; font-size: 16px; transition: background 0.2s; }
+#send-chat-btn:hover { background: #007bff; }
+
+/* --- Темная тема --- */
+body.dark-mode { background-image: none; background-color: #121212; color: #f0f0f0; }
+body.dark-mode header, body.dark-mode .main-nav { background: #1a1a1a; border-bottom: 1px solid #2a2a2a; }
+body.dark-mode .product-card { background: #1e1e1e; box-shadow: 0 4px 15px rgba(0,0,0,0.6); color: #fff; }
+body.dark-mode .product-card p { color: #bbb; }
+body.dark-mode .product-card button, body.dark-mode .hero-btn, body.dark-mode .action-btn { background: #a855f7; color: #fff; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); border: none; }
+body.dark-mode .product-card button:hover, body.dark-mode .hero-btn:hover, body.dark-mode .action-btn:hover { background: #b975f8; box-shadow: 0 0 25px rgba(168, 85, 247, 0.9); }
+body.dark-mode .category-title { background: #1e1e1e; color: #a855f7; border-left: 5px solid #a855f7; }
+body.dark-mode .modal-content, body.dark-mode .chat-window { background: #1e1e1e; color: #fff; border: 1px solid #333; }
+body.dark-mode .chat-messages { background: #121212; }
+body.dark-mode .ai-message { background: #2a2a2a; color: #fff; }
+body.dark-mode .user-message { background: #a855f7; }
+body.dark-mode .chat-input-area { background: #1e1e1e; border-color: #333; }
+body.dark-mode #chat-input { background: #2a2a2a; color: #fff; border: 1px solid #444; }
+/* --- Стили для блока доставки в темной теме --- */
+body.dark-mode .smart-shipping-container {
+    background: #2a2a2a; /* Делаем фон плашки темно-серым */
+    border-color: #444;  /* Затемняем пунктирную рамку */
+}
+
+body.dark-mode .smart-shipping-container p {
+    color: #ffffff; /* Делаем текст белым */
+}
+
+body.dark-mode .progress-bar-bg {
+    background: #444; /* Делаем фон пустой полоски прогресса темнее, чтобы не била по глазам */
+}
+
+/* --- Анимация летящего товара в корзину --- */
+.flying-item { position: fixed; z-index: 9999; border-radius: 50%; width: 60px; height: 60px; object-fit: cover; pointer-events: none; box-shadow: 0 0 20px rgba(168, 85, 247, 0.8); transition: all 0.7s cubic-bezier(0.25, 1, 0.5, 1); }
+#cart-btn { transition: transform 0.2s ease; }
+
+/* --- Красивые Уведомления (Toasts) --- */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.custom-toast {
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideInRight 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Цвета для разных типов уведомлений */
+.custom-toast.success { background: #28a745; }
+.custom-toast.error { background: #dc3545; }
+
+/* Анимация исчезновения */
+.custom-toast.hide {
+    animation: fadeOutRight 0.3s ease forwards;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeOutRight {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100%); }
+}
+
+/* --- Поиск и Сортировка --- */
+.catalog-controls { max-width: 1400px; margin: 0 auto 20px; padding: 0 40px; display: flex; gap: 15px; flex-wrap: wrap; }
+#search-input { flex: 1; padding: 12px 20px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; min-width: 250px; outline: none; }
+#sort-select { padding: 12px 20px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; background: white; cursor: pointer; outline: none; }
+
+/* --- Окно товара --- */
+.product-modal-content { max-width: 750px; width: 90%; }
+.product-modal-body { display: flex; gap: 30px; margin-top: 10px; }
+.product-modal-img { flex: 1; border-radius: 12px; overflow: hidden; max-height: 400px; display: flex; justify-content: center; }
+.product-modal-img img { width: 100%; height: 100%; object-fit: cover; }
+.product-modal-info { flex: 1; display: flex; flex-direction: column; }
+.modal-price-text { font-size: 26px; font-weight: 800; color: #111; margin: 5px 0 15px 0; }
+.modal-desc { color: #555; margin-bottom: 25px; line-height: 1.6; font-size: 15px; }
+.sizes { display: flex; gap: 10px; margin-bottom: 20px; }
+.size-btn { width: 45px; height: 45px; font-weight: bold; border: 2px solid #ccc; background: white; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.size-btn:hover { border-color: #111; }
+.size-btn.active { background: #111; color: white; border-color: #111; }
+
+/* --- Промокод --- */
+.promo-block { display: flex; gap: 10px; margin-bottom: 15px; }
+#promo-input { flex: 1; padding: 10px 15px; border: 1px solid #ccc; border-radius: 6px; outline: none;}
+
+/* Клики на товар в каталоге */
+.product-img-container, .product-card h3 { cursor: pointer; }
+
+/* Поддержка темной темы для новых элементов */
+body.dark-mode #search-input, body.dark-mode #sort-select, body.dark-mode #promo-input { background: #1e1e1e; color: #fff; border-color: #444; }
+body.dark-mode .modal-price-text { color: #fff; }
+body.dark-mode .modal-desc { color: #ccc; }
+body.dark-mode .size-btn { background: #1e1e1e; color: #fff; border-color: #444; }
+body.dark-mode .size-btn:hover { border-color: #a855f7; }
+body.dark-mode .size-btn.active { background: #a855f7; color: white; border-color: #a855f7; }
+
+/* Адаптив окна товара */
+@media (max-width: 700px) {
+    .product-modal-body { flex-direction: column; }
+    .product-modal-img { max-height: 250px; }
+}
