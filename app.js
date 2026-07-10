@@ -213,39 +213,58 @@ function updateCartUI() {
 }
 
 function checkSavedUser() {
-    // Проверяем наличие email'а как главный признак авторизации
     const savedEmail = localStorage.getItem('shop_useremail'); 
     const savedName = localStorage.getItem('shop_username');
     
     if (savedEmail || savedName) {
         document.getElementById('auth-btn').classList.add('hidden');
         document.getElementById('user-badge').classList.remove('hidden');
-        // Если имя пустое, пишем "Пользователь"
         document.getElementById('user-name-display').textContent = savedName || 'Пользователь';
         updateProfileUI(); 
+
+        // ПОКАЗЫВАЕМ АДМИНКУ ТОЛЬКО ДЛЯ НУЖНОЙ ПОЧТЫ
+        if (savedEmail === 'admin@ultra.com') {
+            document.getElementById('admin-open-btn').classList.remove('hidden');
+        }
     }
 }
 
-function updateProfileUI() {
+async function updateProfileUI() {
     const name = localStorage.getItem('shop_username') || '';
     const surname = localStorage.getItem('shop_usersurname') || '';
+    const email = localStorage.getItem('shop_useremail');
     
     document.getElementById('prof-fullname').textContent = (name || surname) ? `${name} ${surname}`.trim() : '—';
-    document.getElementById('prof-email').textContent = localStorage.getItem('shop_useremail') || '—';
+    document.getElementById('prof-email').textContent = email || '—';
     document.getElementById('prof-country').textContent = localStorage.getItem('shop_usercountry') || '—';
     document.getElementById('prof-dob').textContent = localStorage.getItem('shop_userdob') || '—';
     
     const historyContainer = document.getElementById('profile-orders-history');
-    const savedHistory = localStorage.getItem('shop_order_history');
-    if (savedHistory) {
-        const orders = JSON.parse(savedHistory);
-        historyContainer.innerHTML = orders.map(order => `
+    if (!email) return;
+
+    try {
+        const response = await fetch(`/api/orders/${email}`);
+        const orders = await response.json();
+        
+        historyContainer.innerHTML = orders.map(order => {
+            const isProcessing = order.status === 'В обработке';
+            const bg = isProcessing ? '#ffc107' : '#28a745'; // Желтый или зеленый
+            const color = isProcessing ? '#000' : '#fff';
+            
+            return `
             <div class="order-history-item" style="border-bottom: 1px dashed #ccc; padding: 10px 0; font-size: 14px;">
-                <p style="margin:4px 0;"><strong>Заказ #${order.id}</strong> от ${order.date}</p>
-                <p style="margin:4px 0; color:#555;">${order.items.join(', ')}</p>
+                <p style="margin:4px 0; display:flex; justify-content:space-between;">
+                    <strong>Заказ #${order.id}</strong> 
+                    <span style="background: ${bg}; color: ${color}; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 12px;">Статус: ${order.status}</span>
+                </p>
+                <p style="margin:4px 0; color:#555;">${order.order_details}</p>
+                <p style="margin:4px 0; color:#555;">📍 Доставка: ${order.delivery}</p>
                 <p style="margin:4px 0;">Сумма: <strong>${order.total} грн</strong></p>
             </div>
-        `).join('');
+            `;
+        }).join('');
+    } catch (err) {
+        historyContainer.innerHTML = '<p>Ошибка загрузки заказов.</p>';
     }
 }
 
@@ -280,33 +299,68 @@ document.getElementById('profile-cancel-btn').addEventListener('click', () => {
     viewMode.classList.remove('hidden');
 });
 
-// Кнопка "Сохранить" — записываем новые данные и обновляем интерфейс
-document.getElementById('profile-save-btn').addEventListener('click', () => {
+// Кнопка "Сохранить" — отправляем новые данные на сервер и обновляем интерфейс
+document.getElementById('profile-save-btn').addEventListener('click', async () => {
     const newName = document.getElementById('edit-name').value.trim();
     const newSurname = document.getElementById('edit-surname').value.trim();
     const newCountry = document.getElementById('edit-country').value.trim();
     const newDob = document.getElementById('edit-dob').value;
+    
+    // Берем email текущего пользователя, чтобы сервер понял, кого обновлять
+    const userEmail = localStorage.getItem('shop_useremail'); 
 
-    // Сохраняем обновленные значения в память браузера
-    localStorage.setItem('shop_username', newName);
-    localStorage.setItem('shop_usersurname', newSurname);
-    localStorage.setItem('shop_usercountry', newCountry);
-    localStorage.setItem('shop_userdob', newDob);
+    if (!userEmail) return; // Если почты нет, значит мы не авторизованы
 
-    // Сразу же обновляем имя в шапке сайта (Привет, Имя!)
-    document.getElementById('user-name-display').textContent = newName || 'Пользователь';
+    // Меняем текст кнопки, пока идет сохранение
+    const saveBtn = document.getElementById('profile-save-btn');
+    saveBtn.textContent = 'Сохранение...';
+    saveBtn.disabled = true;
 
-    // Перерисовываем текстовые поля в Личном Кабинете
-    updateProfileUI();
+    try {
+        // 1. Отправляем запрос на наш новый серверный API
+        const response = await fetch('/api/update-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: userEmail,
+                name: newName,
+                surname: newSurname,
+                country: newCountry,
+                dob: newDob
+            })
+        });
 
-    // Показываем наше красивое всплывающее уведомление (которое делали в первом шаге)
-    if (typeof showNotification === 'function') {
-        showNotification('Данные профиля успешно изменены!', 'success');
+        if (response.ok) {
+            // 2. Если сервер сказал "ОК", сохраняем значения и в память браузера
+            localStorage.setItem('shop_username', newName);
+            localStorage.setItem('shop_usersurname', newSurname);
+            localStorage.setItem('shop_usercountry', newCountry);
+            localStorage.setItem('shop_userdob', newDob);
+
+            // 3. Обновляем имя в шапке
+            document.getElementById('user-name-display').textContent = newName || 'Пользователь';
+
+            // 4. Перерисовываем текст в самом Личном Кабинете
+            updateProfileUI();
+
+            if (typeof showNotification === 'function') {
+                showNotification('Данные профиля навсегда сохранены в базе!', 'success');
+            }
+
+            // Закрываем режим редактирования
+            editMode.classList.add('hidden');
+            viewMode.classList.remove('hidden');
+        } else {
+            showNotification('Ошибка сохранения на сервере.', 'error');
+        }
+    } catch (err) {
+        console.error("Ошибка обновления профиля:", err);
+        showNotification('Нет связи с сервером.', 'error');
     }
 
-    // Возвращаем модалку в режим просмотра данных
-    editMode.classList.add('hidden');
-    viewMode.classList.remove('hidden');
+    // Возвращаем кнопку в нормальное состояние
+    saveBtn.textContent = 'Сохранить';
+    saveBtn.disabled = false;
 });
 
 /* --- НОВАЯ ЛОГИКА АВТОРИЗАЦИИ (EMAIL + ПАРОЛЬ) --- */
@@ -438,6 +492,13 @@ authForm.addEventListener('submit', async (e) => {
                 document.getElementById('user-badge').classList.remove('hidden');
                 document.getElementById('user-name-display').textContent = data.user.name || 'Пользователь';
                 
+                // ПРОВЕРКА НА АДМИНА ПРИ ВХОДЕ
+                if (data.user.email === 'admin@ultra.com') {
+                    document.getElementById('admin-open-btn').classList.remove('hidden');
+                } else {
+                    document.getElementById('admin-open-btn').classList.add('hidden');
+                }
+                
                 authModal.classList.add('hidden');
                 authForm.reset();
                 if (typeof updateProfileUI === 'function') updateProfileUI();
@@ -486,6 +547,40 @@ document.querySelector('.style-checkout-btn').addEventListener('click', () => {
         total: totals.total 
     });
     localStorage.setItem('shop_order_history', JSON.stringify(history));
+
+// --- ОТПРАВКА ЗАКАЗА НА СЕРВЕР ---
+    const orderDetailsText = cart.map(i => `${i.name} (Р-р: ${i.size}) x${i.quantity}шт.`).join(', ');
+    const userEmail = localStorage.getItem('shop_useremail');
+    
+    const city = document.getElementById('checkout-city').value.trim();
+    const branch = document.getElementById('checkout-branch').value.trim();
+    
+    if (!city || !branch) {
+        return showNotification('Пожалуйста, заполните Город и Отделение Новой Почты!', 'error');
+    }
+    const deliveryAddress = `г. ${city}, Отделение ${branch}`;
+    
+    fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_email: userEmail,
+            order_details: orderDetailsText,
+            delivery: deliveryAddress,
+            total: totals.total,
+            date: new Date().toLocaleDateString('ru-RU')
+        })
+    }).then(() => {
+        cart = [];
+        currentWheelDiscount = 0; 
+        updateCartUI();
+        document.getElementById('cart-modal').classList.add('hidden');
+        document.getElementById('checkout-city').value = '';
+        document.getElementById('checkout-branch').value = '';
+        showNotification(`Заказ успешно оформлен!`, 'success');
+        updateProfileUI(); // Обновляем заказы в профиле
+    }).catch(err => console.error("Ошибка:", err));
+    // ---------------------------------------------
     
     cart = [];
     currentWheelDiscount = 0; 
@@ -617,17 +712,13 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     localStorage.removeItem('shop_username');
     localStorage.removeItem('shop_useremail');
     localStorage.removeItem('shop_password');
-    
-    // Удаляем остальные данные профиля
-    localStorage.removeItem('shop_usersurname');
-    localStorage.removeItem('shop_usercountry');
-    localStorage.removeItem('shop_userdob');
-    localStorage.removeItem('shop_order_history');
+    // ... остальные ключи
 
-    // Прячем профиль, показываем кнопку входа
+    // Прячем профиль и админку, показываем кнопку входа
     document.getElementById('user-badge').classList.add('hidden');
     document.getElementById('auth-btn').classList.remove('hidden');
     document.getElementById('profile-modal').classList.add('hidden');
+    document.getElementById('admin-open-btn').classList.add('hidden'); // Прячем админку
 
     // Перезагружаем страницу для обновления интерфейса
     location.reload();
@@ -696,7 +787,6 @@ const productModal = document.getElementById('product-modal');
 
 document.getElementById('close-product')?.addEventListener('click', () => productModal.classList.add('hidden'));
 
-// Эта функция вызывается при клике на картинку, название или кнопку "В корзину" в каталоге
 window.openProductModal = function(id) {
     activeProduct = products.find(p => p.id === id);
     if (!activeProduct) return;
@@ -704,15 +794,40 @@ window.openProductModal = function(id) {
     document.getElementById('modal-img').src = activeProduct.img;
     document.getElementById('modal-title').textContent = activeProduct.name;
     document.getElementById('modal-price').textContent = activeProduct.price + ' грн';
-    
-    // ВСТАВЛЯЕМ ОПИСАНИЕ ИЗ МАССИВА ТОВАРОВ
     document.getElementById('modal-desc').textContent = activeProduct.description;
     
-    // Сброс размера на 'M' при открытии
-    selectedSize = 'M';
+    const sizesContainer = document.getElementById('modal-sizes');
+    let sizesHTML = '';
+    
+    // ПРОВЕРЯЕМ КАТЕГОРИЮ ТОВАРА ДЛЯ ВЫВОДА НУЖНЫХ РАЗМЕРОВ
+    if (activeProduct.category === 'sneakers') {
+        // Размеры для обуви
+        const shoeSizes = [39, 40, 41, 42, 43, 44, 45];
+        selectedSize = '42'; // Размер по умолчанию для кроссовок
+        
+        sizesHTML = shoeSizes.map(size => 
+            `<button class="size-btn ${size == selectedSize ? 'active' : ''}">${size}</button>`
+        ).join('');
+    } else {
+        // Размеры для одежды
+        const clothesSizes = ['S', 'M', 'L', 'XL'];
+        selectedSize = 'M'; // Размер по умолчанию для одежды
+        
+        sizesHTML = clothesSizes.map(size => 
+            `<button class="size-btn ${size === selectedSize ? 'active' : ''}">${size}</button>`
+        ).join('');
+    }
+    
+    // Отрисовываем нужные кнопки в HTML
+    sizesContainer.innerHTML = sizesHTML;
+    
+    // Вешаем обработчики клика на НОВЫЕ созданные кнопки размеров
     document.querySelectorAll('.size-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent === 'M') btn.classList.add('active');
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            selectedSize = e.target.textContent;
+        });
     });
     
     productModal.classList.remove('hidden');
@@ -735,3 +850,227 @@ document.getElementById('modal-add-to-cart')?.addEventListener('click', (e) => {
         if (typeof showNotification === 'function') showNotification(`Добавлено: ${activeProduct.name} (Размер: ${selectedSize})`, 'success');
     }
 });
+
+/* --- ЛОГИКА АДМИН-ПАНЕЛИ --- */
+const adminModal = document.getElementById('admin-modal');
+const adminOrdersList = document.getElementById('admin-orders-list');
+
+// Открытие админки
+document.getElementById('admin-open-btn').addEventListener('click', () => {
+    adminModal.classList.remove('hidden');
+    loadAdminOrders();
+});
+
+// Закрытие админки
+document.getElementById('close-admin').addEventListener('click', () => {
+    adminModal.classList.add('hidden');
+});
+
+// --- ОБНОВЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ ЗАКАЗОВ В АДМИНКУ ---
+async function loadAdminOrders() {
+    try {
+        const response = await fetch('/api/orders');
+        const orders = await response.json();
+        
+        if (orders.length === 0) {
+            adminOrdersList.innerHTML = '<p style="color: #666;">Пока нет ни одного заказа.</p>';
+            return;
+        }
+        
+        adminOrdersList.innerHTML = orders.map(order => `
+            <div class="admin-order-item">
+                <p style="margin: 2px 0;"><strong>Заказ #${order.id}</strong> от ${order.date}</p>
+                <p style="margin: 2px 0; color: #777;">Клиент: ${order.user_email}</p>
+                <p style="margin: 2px 0; font-style: italic;">Состав: ${order.order_details}</p>
+                <p style="margin: 2px 0; font-weight: bold;">📍 Доставка: ${order.delivery}</p>
+                <p style="margin: 2px 0;">Сумма: <strong>${order.total} грн</strong></p>
+                
+                ${order.status === 'В обработке' ? 
+                    `<button onclick="sendOrder(${order.id})" class="action-btn" style="background: #007bff; padding: 6px 12px; font-size: 12px; width: auto; margin-top: 10px;">📦 Отправить заказ</button>` 
+                    : `<p style="color: #28a745; font-weight: bold; margin-top: 10px;">✅ Товар отправлен</p>`}
+            </div>
+        `).join('');
+    } catch (err) {
+        adminOrdersList.innerHTML = '<p style="color: #dc3545;">Не удалось загрузить заказы.</p>';
+    }
+    
+    // Заодно грузим товары
+    loadAdminProductsList();
+}
+
+// Кнопка "Отправить"
+window.sendOrder = async function(id) {
+    await fetch(`/api/orders/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'Отправлено' })
+    });
+    showNotification('Заказ отправлен!', 'success');
+    loadAdminOrders(); // Перезагружаем список
+}
+
+// --- УПРАВЛЕНИЕ ТОВАРАМИ В АДМИНКЕ ---
+async function loadAdminProductsList() {
+    const list = document.getElementById('admin-products-list');
+    try {
+        const res = await fetch('/api/products');
+        const customProducts = await res.json();
+        
+        if(customProducts.length === 0) {
+            list.innerHTML = '<p style="color: #666;">Добавленных товаров пока нет.</p>';
+            return;
+        }
+        
+        list.innerHTML = customProducts.map(p => `
+            <div style="background: rgba(0,0,0,0.05); padding: 10px; margin-bottom: 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong>${p.name}</strong> (${p.category})<br>
+                    <input type="number" id="price-edit-${p.id}" value="${p.price}" style="width: 80px; padding: 4px; margin-top: 5px;"> грн
+                </div>
+                <div>
+                    <button onclick="updateProductPrice(${p.id})" style="background: #28a745; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">💾 Сохранить</button>
+                    <button onclick="deleteProduct(${p.id})" style="background: #dc3545; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">🗑️ Удалить</button>
+                </div>
+            </div>
+        `).join('');
+    } catch (err) {
+        list.innerHTML = '<p style="color: #dc3545;">Ошибка загрузки товаров.</p>';
+    }
+}
+
+// Сохранить новую цену
+window.updateProductPrice = async function(id) {
+    const newPrice = document.getElementById(`price-edit-${id}`).value;
+    await fetch(`/api/products/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ price: newPrice })
+    });
+    showNotification('Цена обновлена! Перезагрузите страницу.', 'success');
+}
+
+// --- КРАСИВОЕ УДАЛЕНИЕ ТОВАРА ---
+let productToDeleteId = null;
+const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+
+// Открываем красивое окно вместо стандартного браузерного
+window.deleteProduct = function(id) {
+    productToDeleteId = id; // Запоминаем ID товара
+    deleteConfirmModal.classList.remove('hidden'); // Показываем нашу модалку
+}
+
+// Если нажали "Отмена"
+cancelDeleteBtn.addEventListener('click', () => {
+    productToDeleteId = null;
+    deleteConfirmModal.classList.add('hidden');
+});
+
+// Если нажали "Да, удалить"
+confirmDeleteBtn.addEventListener('click', async () => {
+    if (!productToDeleteId) return;
+    
+    // Блокируем кнопку от двойного клика
+    confirmDeleteBtn.textContent = 'Удаление...';
+    confirmDeleteBtn.disabled = true;
+
+    try {
+        // Отправляем запрос на сервер (удаляем из БД)
+        await fetch(`/api/products/${productToDeleteId}`, { method: 'DELETE' });
+        
+        if (typeof showNotification === 'function') {
+            showNotification('Товар успешно удален!', 'success');
+        }
+        
+        // 1. Обновляем список в самой админке
+        loadAdminProductsList(); 
+        
+        // 2. Удаляем товар из основного массива на фронтенде
+        const index = products.findIndex(p => p.id === productToDeleteId);
+        if (index !== -1) {
+            products.splice(index, 1);
+        }
+        
+        // 3. Перерисовываем каталог на главной странице (чтобы товар сразу исчез с витрины)
+        renderCatalog(); 
+        
+    } catch (err) {
+        if (typeof showNotification === 'function') {
+            showNotification('Ошибка при удалении товара', 'error');
+        }
+    }
+
+    // Возвращаем всё в исходное состояние
+    deleteConfirmModal.classList.add('hidden');
+    confirmDeleteBtn.innerHTML = '🗑️ Да, удалить';
+    confirmDeleteBtn.disabled = false;
+    productToDeleteId = null;
+});
+    
+// --- ВОССТАНОВЛЕННАЯ ЛОГИКА ДОБАВЛЕНИЯ ТОВАРА ---
+const adminForm = document.getElementById('admin-add-product-form');
+if (adminForm) {
+    adminForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Добавление...';
+        
+        const name = document.getElementById('admin-p-name').value.trim();
+        const price = parseFloat(document.getElementById('admin-p-price').value);
+        const category = document.getElementById('admin-p-category').value;
+        const img = document.getElementById('admin-p-img').value.trim();
+        const description = "Товар добавлен через панель администратора.";
+        
+        try {
+            const response = await fetch('/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category, name, price, img, description })
+            });
+            
+            const newProduct = await response.json();
+            newProduct.id = newProduct.id + 10000;
+            products.push(newProduct);
+            renderCatalog();
+            
+            adminForm.reset();
+            if (typeof showNotification === 'function') {
+                showNotification(`Товар "${name}" успешно добавлен в базу!`, 'success');
+            }
+        } catch (err) {
+            console.error(err);
+            if (typeof showNotification === 'function') {
+                showNotification('Ошибка сохранения в базу данных.', 'error');
+            }
+        }
+        
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '➕ Добавить в каталог';
+    });
+}
+
+// Загружаем дополнительные товары из БД при старте сайта
+async function loadCustomProducts() {
+    try {
+        const response = await fetch('/api/products');
+        if (response.ok) {
+            const customProducts = await response.json();
+            if (customProducts && customProducts.length > 0) {
+                customProducts.forEach(p => {
+                    p.id = p.id + 10000;
+                    products.push(p);
+                });
+            }
+        }
+        renderCatalog(); 
+    } catch (err) {
+        console.error("Ошибка при загрузке дополнительных товаров:", err);
+        renderCatalog(); 
+    }
+}
+
+// Запускаем загрузку при открытии сайта
+loadCustomProducts();

@@ -233,3 +233,29 @@ body.dark-mode .size-btn.active { background: #a855f7; color: white; border-colo
     .product-modal-body { flex-direction: column; }
     .product-modal-img { max-height: 250px; }
 }
+
+/* Кнопка админки в стиле Midnight Purple */
+.admin-btn {
+    background-color: #3b0764 !important; /* Насыщенный темно-пурпурный */
+    color: #ffffff !important;
+    border: 1px solid #581c87 !important;
+    transition: background 0.3s ease;
+}
+
+.admin-btn:hover {
+    background-color: #581c87 !important;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+/* Элемент списка заказов */
+.admin-order-item {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border-left: 4px solid #3b0764;
+}
+
+.dark-mode .admin-order-item {
+    background: rgba(255, 255, 255, 0.05);
+}
