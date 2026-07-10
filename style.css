@@ -259,3 +259,33 @@ body.dark-mode .size-btn.active { background: #a855f7; color: white; border-colo
 .dark-mode .admin-order-item {
     background: rgba(255, 255, 255, 0.05);
 }
+
+/* ==========================================
+   ФИКС ЦВЕТОВ АДМИНКИ ДЛЯ ТЕМНОЙ ТЕМЫ
+   ========================================== */
+
+/* Инпуты и выпадающие списки */
+.dark-mode #admin-modal input,
+.dark-mode #admin-modal select {
+    background-color: #2b2b2b !important;
+    color: #ffffff !important;
+    border-color: #555 !important;
+}
+
+/* Опции внутри выпадающего списка */
+.dark-mode #admin-modal option {
+    background-color: #2b2b2b;
+    color: #ffffff;
+}
+
+/* Осветляем серый текст-заглушку ("Загрузка...", "Пока нет заказов") */
+.dark-mode #admin-orders-list > p,
+.dark-mode #admin-products-list > p {
+    color: #bbbbbb !important;
+}
+
+/* Делаем плашки добавленных товаров видимыми и читаемыми */
+.dark-mode #admin-products-list > div {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #ffffff !important;
+}
