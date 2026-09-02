@@ -363,7 +363,7 @@ document.getElementById('profile-save-btn').addEventListener('click', async () =
     saveBtn.disabled = false;
 });
 
-/* --- НОВАЯ ЛОГИКА АВТОРИЗАЦИИ (EMAIL + ПАРОЛЬ) --- */
+/* --- ИСПРАВЛЕННАЯ ЛОГИКА АВТОРИЗАЦИИ --- */
 const authModal = document.getElementById('auth-modal');
 const authChoiceStep = document.getElementById('auth-choice-step');
 const authForm = document.getElementById('register-form');
@@ -372,56 +372,153 @@ const loginFields = document.getElementById('login-fields');
 const authFormTitle = document.getElementById('auth-form-title');
 const authSubmitBtn = document.getElementById('auth-submit-btn');
 
-let authMode = 'REG';
+let authMode = 'LOGIN';
 
-// Открытие окна авторизации с выбором действий
+// Открытие окна авторизации
 document.getElementById('auth-btn').addEventListener('click', () => {
     authModal.classList.remove('hidden');
     authChoiceStep.classList.remove('hidden');
     authForm.classList.add('hidden');
 });
 
-// Кнопка закрытия окна
+// Закрытие
 document.getElementById('close-auth').addEventListener('click', () => {
     authModal.classList.add('hidden');
 });
 
-// Переключение на Вход
+// Клик на Вход
 document.getElementById('choice-login-btn').addEventListener('click', () => {
     authMode = 'LOGIN';
     authFormTitle.textContent = 'Вход в аккаунт';
     authSubmitBtn.textContent = 'Войти';
+    authSubmitBtn.disabled = false;
     
     authChoiceStep.classList.add('hidden');
     authForm.classList.remove('hidden');
     regFields.classList.add('hidden');
     loginFields.classList.remove('hidden');
     
-    // Смена обязательных полей
-    ['reg-name', 'reg-surname', 'reg-email', 'reg-password'].forEach(id => document.getElementById(id).removeAttribute('required'));
-    ['login-email', 'login-password'].forEach(id => document.getElementById(id).setAttribute('required', 'true'));
+    // Снимаем обязательность со скрытых полей регистрации!
+    ['reg-name', 'reg-surname', 'reg-email', 'reg-password'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.removeAttribute('required');
+    });
 });
 
-// Переключение на Регистрацию
+// Клик на Регистрацию
 document.getElementById('choice-reg-btn').addEventListener('click', () => {
     authMode = 'REG';
     authFormTitle.textContent = 'Регистрация';
     authSubmitBtn.textContent = 'Создать аккаунт';
+    authSubmitBtn.disabled = false;
     
     authChoiceStep.classList.add('hidden');
     authForm.classList.remove('hidden');
     regFields.classList.remove('hidden');
     loginFields.classList.add('hidden');
     
-    // Смена обязательных полей
-    ['reg-name', 'reg-surname', 'reg-email', 'reg-password'].forEach(id => document.getElementById(id).setAttribute('required', 'true'));
-    ['login-email', 'login-password'].forEach(id => document.getElementById(id).removeAttribute('required'));
+    ['login-email', 'login-password'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.removeAttribute('required');
+    });
 });
 
-// Кнопка "Назад"
+// Кнопка Назад
 document.getElementById('back-to-choice').addEventListener('click', () => {
     authForm.classList.add('hidden');
     authChoiceStep.classList.remove('hidden');
+});
+
+// Отправка формы
+authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    authSubmitBtn.disabled = true;
+    authSubmitBtn.textContent = 'Загрузка...';
+
+    if (authMode === 'REG') {
+        const name = document.getElementById('reg-name').value.trim();
+        const surname = document.getElementById('reg-surname').value.trim();
+        const email = document.getElementById('reg-email').value.trim().toLowerCase();
+        const password = document.getElementById('reg-password').value;
+        
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, surname, email, password })
+            });
+            const data = await response.json();
+            
+            if (!response.ok) {
+                showNotification(data.error || 'Ошибка регистрации', 'error');
+            } else {
+                showNotification('Регистрация успешна! Теперь вы можете войти.', 'success');
+                document.getElementById('choice-login-btn').click();
+            }
+        } catch (err) {
+            showNotification('Ошибка соединения с сервером!', 'error');
+        }
+    } else {
+        const email = document.getElementById('login-email').value.trim().toLowerCase();
+        const password = document.getElementById('login-password').value;
+        
+        // Быстрый локальный вход для админа
+        if (email === 'admin' && password === 'admin') {
+            localStorage.setItem('shop_username', 'Главный');
+            localStorage.setItem('shop_usersurname', 'Администратор');
+            localStorage.setItem('shop_useremail', 'admin');
+            
+            showNotification('Вы успешно вошли как Администратор!', 'success');
+            document.getElementById('auth-btn').classList.add('hidden');
+            document.getElementById('user-badge').classList.remove('hidden');
+            document.getElementById('user-name-display').textContent = 'Главный';
+            document.getElementById('admin-open-btn').classList.remove('hidden');
+            
+            authModal.classList.add('hidden');
+            authForm.reset();
+            authSubmitBtn.disabled = false;
+            authSubmitBtn.textContent = 'Войти';
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            
+            if (!response.ok) {
+                showNotification(data.error || 'Неверная почта или пароль!', 'error');
+            } else {
+                localStorage.setItem('shop_username', data.user.name);
+                localStorage.setItem('shop_usersurname', data.user.surname || '');
+                localStorage.setItem('shop_useremail', data.user.email);
+                
+                showNotification('Вы успешно вошли!', 'success');
+                document.getElementById('auth-btn').classList.add('hidden');
+                document.getElementById('user-badge').classList.remove('hidden');
+                document.getElementById('user-name-display').textContent = data.user.name || 'Пользователь';
+                
+                if (data.user.email === 'admin@ultra.com' || data.user.email === 'admin') {
+                    document.getElementById('admin-open-btn').classList.remove('hidden');
+                } else {
+                    document.getElementById('admin-open-btn').classList.add('hidden');
+                }
+                
+                authModal.classList.add('hidden');
+                authForm.reset();
+                if (typeof updateProfileUI === 'function') updateProfileUI();
+            }
+        } catch (err) {
+            showNotification('Ошибка соединения с сервером!', 'error');
+        }
+    }
+    
+    authSubmitBtn.disabled = false;
+    authSubmitBtn.textContent = authMode === 'REG' ? 'Создать аккаунт' : 'Войти';
 });
 
 // Обработка отправки формы (ТЕПЕРЬ РАБОТАЕТ ЧЕРЕЗ БАЗУ ДАННЫХ SQL)
