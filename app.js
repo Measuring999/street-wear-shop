@@ -223,7 +223,7 @@ function checkSavedUser() {
         updateProfileUI(); 
 
         // ПОКАЗЫВАЕМ АДМИНКУ ТОЛЬКО ДЛЯ НУЖНОЙ ПОЧТЫ
-        if (savedEmail === 'admin@ultra.com') {
+        if (savedEmail === 'admin') {
             document.getElementById('admin-open-btn').classList.remove('hidden');
         }
     }
@@ -493,7 +493,7 @@ authForm.addEventListener('submit', async (e) => {
                 document.getElementById('user-name-display').textContent = data.user.name || 'Пользователь';
                 
                 // ПРОВЕРКА НА АДМИНА ПРИ ВХОДЕ
-                if (data.user.email === 'admin@ultra.com') {
+                if (data.user.email === 'admin') {
                     document.getElementById('admin-open-btn').classList.remove('hidden');
                 } else {
                     document.getElementById('admin-open-btn').classList.add('hidden');

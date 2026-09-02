@@ -83,13 +83,27 @@ app.post('/api/register', (req, res) => {
     });
 });
 
-// 4. API для ВХОДА (SQL SELECT)
+// 4. API для ВХОДА
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
     
-    // SQL запрос на поиск пользователя
+    // ВХОД ТОЛЬКО ПО ЛОГИНУ admin И ПАРОЛЮ admin
+    if (email === 'admin' && password === 'admin') {
+        return res.json({
+            success: true,
+            user: {
+                id: 1,
+                name: 'Главный',
+                surname: 'Администратор',
+                email: 'admin',
+                country: 'UA',
+                dob: '2000-01-01'
+            }
+        });
+    }
+
+    // Вход для обычных пользователей через базу данных
     const sql = `SELECT * FROM users WHERE email = ? AND password = ?`;
-    
     db.get(sql, [email, password], (err, row) => {
         if (err || !row) {
             return res.status(401).json({ error: "Неверная почта или пароль!" });
